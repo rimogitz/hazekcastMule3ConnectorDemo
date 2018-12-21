@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration1" host="0.0.0.0" port="8083" doc:name="HTTP Listener Configuration"/>
+   <spring:beans>
+    <spring:bean class="com.rm.lab.hzc.mule.main.HazelcastStore" name="invokeHazelcastStoreBean">
+    </spring:bean>
+    </spring:beans>
+    <flow name="hazelcastputFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration1" path="/put" doc:name="HTTP"/>
+        <invoke object-ref="invokeHazelcastStoreBean" method="put" doc:name="Invoke Hazelcast Store Bean PUT" methodArguments="#[message.inboundProperties.'http.query.params'.['key']],#[message.inboundProperties.'http.query.params'.['value']]"/>
+        <echo-component doc:name="Echo"/>
+    </flow>
+</mule>

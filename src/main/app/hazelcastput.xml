@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:hazelcast-client="http://www.mulesoft.org/schema/mule/hazelcast-client" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/hazelcast-client http://www.mulesoft.org/schema/mule/hazelcast-client/current/mule-hazelcast-client.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration1" host="0.0.0.0" port="8083" doc:name="HTTP Listener Configuration"/>
+   <spring:beans>
+    <spring:bean class="com.rm.lab.hzc.mule.main.HazelcastStore" name="invokeHazelcastStoreBean">
+    </spring:bean>
+    </spring:beans>
+    <hazelcast-client:config name="HazelcastClient__Configuration" cacheName="myCache" configFile="C:\Users\riaz\git\springIO2017\version4\src\main\resources\hazelcast-client.xml" doc:name="HazelcastClient: Configuration"/>
+    <flow name="hazelcastputFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration1" path="/put" doc:name="HTTP"/>
+        <hazelcast-client:put config-ref="HazelcastClient__Configuration" key="#[message.inboundProperties.'http.query.params'.['key']]" value="#[message.inboundProperties.'http.query.params'.['value']]" doc:name="HazelcastClient"/>
+        <echo-component doc:name="Echo"/>
+    </flow>
+</mule>

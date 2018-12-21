@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8082" doc:name="HTTP Listener Configuration"/>
+   <spring:beans>
+    <spring:bean class="com.rm.lab.hzc.mule.main.HazelcastInvoke" name="invokeHazelcastSpringBean">
+    </spring:bean>
+    </spring:beans>
+    <flow name="invoke-component-demoFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/invoke" doc:name="HTTP"/>
+        <invoke object-ref="invokeHazelcastSpringBean" method="methodA" doc:name="Invoke Spring Bean Method A"/>
+        <echo-component doc:name="Echo"/>
+        <invoke object-ref="invokeHazelcastSpringBean" method="methodB" doc:name="Invoke Spring Bean Method B"/>
+        <echo-component doc:name="Echo"/>
+        <invoke object-ref="invokeHazelcastSpringBean" method="methodC" doc:name="Invoke Spring Bean Method C" methodArguments="#[message.inboundProperties.'http.query.params'.['name']],#[message.inboundProperties.'http.query.params'.['age']]"/>
+        <echo-component doc:name="Echo"/>
+    </flow>
+</mule>
